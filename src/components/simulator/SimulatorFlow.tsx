@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, CheckCircle2, UserCircle, Vote, Box, Search, Award, Fingerprint, PartyPopper } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { useUser } from '../../context/UserContext';
 
 const SIMULATOR_STEPS = [
@@ -56,6 +57,12 @@ export function SimulatorFlow() {
     if (step < SIMULATOR_STEPS.length - 1) {
       if (step === SIMULATOR_STEPS.length - 2) {
         await addXp(100);
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#2563eb', '#f59e0b', '#10b981', '#ef4444']
+        });
       }
       setStep(step + 1);
     } else {

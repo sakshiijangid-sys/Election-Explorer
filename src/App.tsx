@@ -26,8 +26,33 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={48} />
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-center">
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-8"
+        >
+          <div className="w-20 h-20 bg-primary rounded-[2rem] flex items-center justify-center text-white font-black text-4xl shadow-2xl rotate-6 mx-auto relative">
+             E
+             <motion.div 
+               animate={{ rotate: 360 }}
+               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+               className="absolute -inset-4 border-2 border-dashed border-primary/20 rounded-full"
+             />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-black tracking-tight text-primary italic">
+              ELECTION<span className="text-secondary">EXPLORER</span>
+            </h1>
+            <div className="flex items-center justify-center gap-1">
+               <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity }} className="w-1.5 h-1.5 bg-primary rounded-full" />
+               <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }} className="w-1.5 h-1.5 bg-primary rounded-full" />
+               <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }} className="w-1.5 h-1.5 bg-primary rounded-full" />
+            </div>
+          </div>
+          <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">Preparing your journey</p>
+        </motion.div>
       </div>
     );
   }

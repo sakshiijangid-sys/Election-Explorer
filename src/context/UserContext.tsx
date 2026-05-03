@@ -77,7 +77,44 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                needsUpdate = true;
             }
 
-            if (needsUpdate) {
+            // Streak Logic - Update lastActive and streak if it's a new day
+            const today = new Date().toISOString().split('T')[0];
+            const lastActiveDate = data.lastActive ? data.lastActive.split('T')[0] : null;
+            
+            if (lastActiveDate !== today) {
+              needsUpdate = true;
+              let newStreak = data.streak || 1;
+              
+              if (lastActiveDate) {
+                const lastDate = new Date(lastActiveDate);
+                const todayDate = new Date(today);
+                const diffTime = Math.abs(todayDate.getTime() - lastDate.getTime());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 1) {
+                  newStreak += 1;
+                } else if (diffDays > 1) {
+                  newStreak = 1; // Reset if break more than a day
+                }
+              }
+
+              // Streak Badge check
+              if (newStreak >= 3 && !updatedBadges.some(b => b.id === 'streak-3')) {
+                updatedBadges.push({
+                  id: 'streak-3',
+                  title: 'Consistency King',
+                  description: 'Learned for 3 consecutive days.',
+                  icon: 'Flame',
+                  awardedAt: new Date().toISOString()
+                });
+              }
+
+              updateDoc(userDocRef, { 
+                streak: newStreak, 
+                lastActive: new Date().toISOString(),
+                badges: updatedBadges 
+              }).catch(console.error);
+            } else if (needsUpdate) {
               updateDoc(userDocRef, { badges: updatedBadges }).catch(console.error);
             }
           } else {
@@ -87,10 +124,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
               email: firebaseUser.email || '',
               xp: 0,
               streak: 1,
-              lastActive: new Date().toISOString(),
+              currentLevel: 1,
               completedModules: [],
               badges: [],
-              currentLevel: 1
+              lastActive: new Date().toISOString()
             };
             setDoc(userDocRef, initialProfile).catch(err => 
               handleFirestoreError(err, OperationType.WRITE, `users/${firebaseUser.uid}`)

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BookOpen, CheckCircle2, Lock, ArrowRight, X, HelpCircle, Award } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { LEVELS } from '../../constants/content';
 import { useUser } from '../../context/UserContext';
 import { Module, Question } from '../../types';
@@ -60,7 +61,7 @@ export function LearnSection() {
       </div>
 
       {/* Progress Bar */}
-      <div className="space-y-3">
+      <div className="space-y-3" role="progressbar" aria-valuenow={Math.round(((profile?.completedModules.length || 0) / LEVELS.reduce((acc, l) => acc + l.modules.length, 0)) * 100)} aria-valuemin={0} aria-valuemax={100}>
          <div className="flex justify-between items-end">
            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Total Progress</span>
            <span className="text-sm font-black text-primary">{Math.round(((profile?.completedModules.length || 0) / LEVELS.reduce((acc, l) => acc + l.modules.length, 0)) * 100)}%</span>
@@ -69,7 +70,8 @@ export function LearnSection() {
             <motion.div 
                initial={{ width: 0 }}
                animate={{ width: `${((profile?.completedModules.length || 0) / LEVELS.reduce((acc, l) => acc + l.modules.length, 0)) * 100}%` }}
-               className="h-full bg-primary rounded-full"
+               transition={{ type: "spring", stiffness: 50 }}
+               className="h-full bg-primary rounded-full shadow-[0_0_15px_rgba(37,99,235,0.3)]"
             />
          </div>
       </div>
@@ -132,11 +134,13 @@ export function LearnSection() {
                   whileHover={!locked ? { scale: 1.15, rotate: [0, -5, 5, 0] } : {}}
                   whileTap={!locked ? { y: 4, scale: 0.9 } : {}}
                   disabled={locked}
+                  aria-label={`Stage ${level.id}: ${level.title}. ${locked ? "Locked" : current ? "Current stage" : "Completed"}`}
+                  aria-current={current ? "step" : undefined}
                   onClick={() => {
                     const firstIncomplete = level.modules.find(m => !isModuleCompleted(m.id)) || level.modules[0];
                     setSelectedModule(firstIncomplete);
                   }}
-                  className={`w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center relative z-10 transition-all border-white border-4 shadow-2xl ${
+                  className={`w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center relative z-10 transition-all border-white border-4 shadow-2xl focus:outline-none focus:ring-4 focus:ring-primary/40 ${
                     locked 
                       ? 'bg-slate-300 border-b-8 border-slate-400 opacity-60' 
                       : current 
@@ -264,6 +268,13 @@ function QuizView({ questions, onComplete, onClose }: { questions: Question[], o
     } else {
       setFinished(true);
       onComplete(score);
+      // Trigger confetti on quiz completion
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#2563eb', '#f59e0b', '#10b981', '#ef4444']
+      });
     }
   };
 
