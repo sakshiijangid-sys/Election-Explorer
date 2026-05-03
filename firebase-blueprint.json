@@ -1,0 +1,56 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user progress, XP, and achievement data.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "xp": { "type": "integer", "description": "Total experience points earned." },
+        "streak": { "type": "integer", "description": "Current daily learning streak." },
+        "lastActive": { "type": "string", "format": "date-time" },
+        "completedModules": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of module IDs completed by the user."
+        },
+        "badges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "awardedAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "currentLevel": { "type": "integer", "description": "The current learning level the user is on (1-5)." }
+      },
+      "required": ["userId", "email", "xp", "streak"]
+    },
+    "QuizResult": {
+      "title": "Quiz Result",
+      "description": "Records the outcome of a quiz attempt.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "moduleId": { "type": "string" },
+        "score": { "type": "integer" },
+        "totalQuestions": { "type": "integer" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "moduleId", "score", "totalQuestions", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Storage for user-specific progression data."
+    },
+    "quizzes/{quizId}": {
+      "schema": "QuizResult",
+      "description": "Historical record of quiz completions."
+    }
+  }
+}

@@ -1,0 +1,71 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // User Profile Rules
+    match /users/{userId} {
+      function isValidUser(data) {
+        return data.userId == request.auth.uid &&
+               data.email is string &&
+               data.xp is int &&
+               data.streak is int &&
+               data.currentLevel is int &&
+               data.lastActive is string &&
+               data.completedModules is list &&
+               data.badges is list;
+      }
+
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming()) && incoming().keys().size() == 8; 
+      
+      allow update: if isOwner(userId) && isValidUser(incoming()) && (
+        // Action: Just updating XP or progress
+        (incoming().diff(existing()).affectedKeys().hasAny(['xp', 'lastActive', 'completedModules', 'currentLevel', 'badges'])) &&
+        // Protect immutability
+        incoming().userId == existing().userId &&
+        incoming().email == existing().email &&
+        incoming().xp >= existing().xp
+      );
+    }
+
+    // Quiz Results Rules
+    match /quizzes/{quizId} {
+      function isValidQuizResult(data) {
+        return data.userId == request.auth.uid &&
+               data.moduleId is string &&
+               data.score is int &&
+               data.totalQuestions is int;
+      }
+
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidQuizResult(incoming());
+    }
+  }
+}

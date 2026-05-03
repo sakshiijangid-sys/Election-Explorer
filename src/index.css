@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2563EB;
+  --color-secondary: #F97316;
+  --color-accent: #10B981;
+  --color-surface: #FFFFFF;
+  --color-background: #F0F7FF;
+  
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-slate-800 antialiased font-sans;
+  }
+}
+
+@layer components {
+  .card-vibrant {
+    @apply bg-white rounded-[2.5rem] p-8 border-b-8 border-slate-200 transition-all duration-300;
+  }
+  
+  .card-vibrant-primary {
+    @apply bg-white rounded-[2.5rem] p-8 border-b-8 border-primary transition-all duration-300;
+  }
+
+  .card-vibrant-secondary {
+    @apply bg-white rounded-[2.5rem] p-8 border-b-8 border-secondary transition-all duration-300;
+  }
+  
+  .btn-vibrant-primary {
+    @apply bg-primary text-white font-black py-4 px-8 rounded-2xl border-b-4 border-blue-800 transition-all active:translate-y-1 active:border-b-0 disabled:opacity-50 uppercase tracking-tight;
+  }
+  
+  .btn-vibrant-secondary {
+    @apply bg-secondary text-white font-black py-4 px-8 rounded-2xl border-b-4 border-orange-700 transition-all active:translate-y-1 active:border-b-0 disabled:opacity-50 uppercase tracking-tight;
+  }
+
+  .nav-pill-container {
+    @apply fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md border-2 border-blue-50 p-2 rounded-[2rem] shadow-2xl flex items-center gap-1 z-50;
+  }
+
+  .nav-pill-item {
+    @apply px-4 py-3 rounded-xl font-black text-xs transition-all uppercase tracking-tight whitespace-nowrap;
+  }
+
+  .nav-pill-item-active {
+    @apply bg-primary text-white shadow-md;
+  }
+
+  .nav-pill-item-inactive {
+    @apply text-slate-400 hover:bg-blue-50 hover:text-primary;
+  }
+}
+
+/* Horizontal Scroll Timeline Custom Styles */
+.timeline-track {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.timeline-track::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
